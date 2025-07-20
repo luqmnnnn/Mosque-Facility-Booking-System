@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            background-color: #fff5e1;
+            font-family: Arial, sans-serif;
+            padding: 40px;
+        }
+        .login-container {
+            max-width: 500px;
+            margin: auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #5d4037;
+            text-align: center;
+        }
+        .intro-text {
+            text-align: center;
+            color: #6d4c41;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        .info-box {
+            background-color: #ffecb3;
+            border: 1px solid #ffcc80;
+            border-radius: 6px;
+            padding: 10px 15px;
+            margin-bottom: 25px;
+            color: #5d4037;
+            font-size: 14px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            margin-top: 25px;
+            width: 100%;
+            background-color: #ffcc80;
+            color: #5d4037;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .register-link, .message {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .register-link a {
+            color: #5d4037;
+            text-decoration: underline;
+        }
+        small {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+
+        <!-- Masjid Header + Image -->
+        <img src="{% static 'images/masjid.jpg' %}" alt="Masjid" class="header-image">
+        <h1>Mosque Prima Saujana Facility Booking System</h1>
+
+        <!-- Welcome Info -->
+        <h2>Login to Your Account</h2>
+        <p class="intro-text">
+            Welcome to the Mosque Prima Saujana Facility Booking System. Please log in to manage your bookings, check facility availability, and submit payments.
+        </p>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <p><strong>Important:</strong></p>
+            <ul style="padding-left: 20px; margin: 0;">
+                <li>Use your registered username and password to log in.</li>
+                <li>If you don’t have an account yet, register using the link below.</li>
+                <li>Your role (User/Admin) will be detected automatically.</li>
+            </ul>
+        </div>
+
+        <!-- Login Form -->
+        <form method="post" action="{% url 'booking:login' %}">
+            {% csrf_token %}
+
+            <label for="username">Username:</label>
+            <input type="text" name="username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" required>
+
+            <label for="role">Login As:</label>
+            <select id="role" disabled>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+            <small>(Your role will be identified automatically based on your account.)</small>
+
+            <button type="submit">Login</button>
+        </form>
+
+        {% if messages %}
+            <div class="message">
+                {% for message in messages %}
+                    <p style="color: red;">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Register Link -->
+        <div class="register-link">
+            <p>Don't have an account? <a href="{% url 'booking:register' %}">Register here</a></p>
+        </div>
+    </div>
+</body>
+</html>

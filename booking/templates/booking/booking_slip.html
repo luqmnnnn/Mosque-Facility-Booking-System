@@ -1,0 +1,47 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}Booking Slip{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: auto; background-color: #fff5e1; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+    <h2 style="color: #5d4037;">🧾 Booking Slip</h2>
+    <hr style="border-color: #ffcc80;">
+
+    <p><strong>Receipt No:</strong> {{ payment.receipt_number }}</p>
+    <p><strong>Booking ID:</strong> {{ payment.booking.id }}</p>
+    <p><strong>User:</strong> {{ payment.booking.user.username }}</p>
+    <p><strong>Facility:</strong> {{ payment.booking.facility.name }}</p>
+    <p><strong>Date:</strong> {{ payment.booking.event_date }}</p>
+    <p><strong>Time:</strong>
+        {% if payment.booking.time_slot == "08:00-22:00" %}
+            Full Day (08:00–22:00)
+        {% else %}
+            {{ payment.booking.get_time_slot_display }}
+        {% endif %}
+    </p>
+    <p><strong>Status:</strong>
+        {% if payment.booking.status == "Approved" %}
+            <span style="color: green; font-weight: bold;">Approved</span>
+        {% elif payment.booking.status == "Rejected" %}
+            <span style="color: red; font-weight: bold;">Rejected</span>
+        {% else %}
+            <span style="color: orange; font-weight: bold;">Pending</span>
+        {% endif %}
+    </p>
+    <p><strong>Amount Paid:</strong> RM {{ payment.amount }}</p>
+    <p><strong>Payment Method:</strong> {{ payment.method }}</p>
+    <p><strong>Payment Date:</strong> {{ payment.payment_date }}</p>
+
+    {% if payment.receipt_file %}
+        <p><strong>Uploaded Receipt:</strong> <a href="{{ payment.receipt_file.url }}" target="_blank">📄 View File</a></p>
+    {% endif %}
+
+    <button onclick="window.print()" style="margin-top: 20px; background-color: #ffcc80; color: #5d4037; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+        🖨️ Print Booking Slip
+    </button>
+
+    <br><br>
+    <a href="{% url 'booking:my_bookings' %}" style="color: #5d4037;">← Back to My Bookings</a>
+</div>
+{% endblock %}

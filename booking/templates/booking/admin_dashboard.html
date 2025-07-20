@@ -1,0 +1,119 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h2 style="color: #5d4037;">🛠️ Admin Dashboard</h2>
+
+<p><a href="{% url 'booking:booking_reports' %}" style="color: #5d4037; font-weight: bold;">📊 View Booking Reports (Daily/Weekly/Monthly)</a></p>
+<p><a href="{% url 'booking:home' %}" style="color: #5d4037;">← Back to Home</a></p>
+
+<table style="width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #fff5e1; box-shadow: 0 4px 8px rgba(0,0,0,0.05); border-radius: 10px;">
+    <thead>
+        <tr style="background-color: #ffe0b2;">
+            <th style="padding: 12px; border: 1px solid #e0c097;">User</th>
+            <th style="padding: 12px; border: 1px solid #e0c097;">Facility</th>
+            <th style="padding: 12px; border: 1px solid #e0c097;">Event Type</th>
+            <th style="padding: 12px; border: 1px solid #e0c097;">Date</th>
+            <th style="padding: 12px; border: 1px solid #e0c097;">Time Slot</th>
+            <th style="padding: 12px; border: 1px solid #e0c097;">Status</th>
+            <th style="padding: 12px; border: 1px solid #e0c097;">Receipt</th>
+            <th style="padding: 12px; border: 1px solid #e0c097;">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for booking in bookings %}
+        <tr>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">{{ booking.user.username }}</td>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">{{ booking.facility.name }}</td>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">{{ booking.event_type }}</td>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">{{ booking.event_date }}</td>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">
+                {% if booking.time_slot == "08:00-22:00" %}
+                    Full Day (08:00–22:00)
+                {% else %}
+                    {{ booking.get_time_slot_display }}
+                {% endif %}
+            </td>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">
+                {% if booking.status == "Approved" %}
+                    <span style="color: green; font-weight: bold;">Approved</span>
+                {% elif booking.status == "Rejected" %}
+                    <span style="color: red; font-weight: bold;">Rejected</span>
+                {% else %}
+                    <span style="color: orange; font-weight: bold;">Pending</span>
+                {% endif %}
+            </td>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">
+                {% if booking.payment and booking.payment.receipt_file %}
+                    <a href="{{ booking.payment.receipt_file.url }}" target="_blank" style="color: #5d4037;">View Receipt</a>
+                {% else %}
+                    <span style="color: gray;">Not Uploaded</span>
+                {% endif %}
+            </td>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">
+                {% if booking.status == "Pending" %}
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                        <button class="btn-approve" name="action" value="approve">Approve</button>
+                        <button class="btn-reject" name="action" value="reject">Reject</button>
+                    </form>
+                {% endif %}
+
+                <a href="{% url 'booking:edit_booking' booking.id %}" class="btn-edit">Edit</a>
+
+                <form method="post" onsubmit="return confirm('Are you sure you want to delete this booking?');" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <button class="btn-delete" name="action" value="delete">Delete</button>
+                </form>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="8" style="text-align:center; padding: 15px;">No bookings found.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<style>
+    .btn-approve {
+        background-color: #81c784;
+        color: #fff;
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 5px;
+    }
+    .btn-reject {
+        background-color: #e57373;
+        color: #fff;
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .btn-delete {
+        background-color: #ef5350;
+        color: #fff;
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 5px;
+    }
+    .btn-edit {
+        background-color: #64b5f6;
+        color: #fff;
+        padding: 6px 12px;
+        text-decoration: none;
+        border-radius: 4px;
+        display: inline-block;
+        margin-top: 5px;
+    }
+</style>
+{% endblock %}

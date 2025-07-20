@@ -1,0 +1,50 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<h2 style="color: #5d4037;">👤 My Profile</h2>
+
+<form method="post" style="background-color: #fff5e1; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 600px;">
+    {% csrf_token %}
+
+    <p><strong>Username:</strong> {{ user.username }}</p>
+
+    <p>
+        <label for="first_name">First Name:</label><br>
+        <input type="text" name="first_name" value="{{ user.first_name }}" required>
+    </p>
+
+    <p>
+        <label for="last_name">Last Name:</label><br>
+        <input type="text" name="last_name" value="{{ user.last_name }}" required>
+    </p>
+
+    <p>
+        <label for="email">Email:</label><br>
+        <input type="email" name="email" value="{{ user.email }}" required>
+    </p>
+
+    {{ form.as_p }}
+
+    <hr>
+
+    <h4 style="color: #5d4037;">🔐 Change Password</h4>
+
+    <p>
+        <label for="new_password">New Password:</label><br>
+        <input type="password" name="new_password">
+    </p>
+
+    <p>
+        <label for="confirm_password">Confirm Password:</label><br>
+        <input type="password" name="confirm_password">
+    </p>
+
+    <button type="submit"
+            style="background-color: #ffcc80; color: #5d4037; padding: 10px 20px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer;">
+        💾 Save Changes
+    </button>
+</form>
+{% endblock %}

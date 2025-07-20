@@ -1,0 +1,40 @@
+{% extends "booking/base.html" %}
+{% block content %}
+<h2>Facility Availability Calendar</h2>
+
+<form method="get">
+    <label for="date">Select Date:</label>
+    <input type="date" id="date" name="date" value="{{ selected_date|date:'Y-m-d' }}" required>
+    <button type="submit">Show</button>
+</form>
+<br>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Facility Name</th>
+            <th>Description</th>
+            <th>Status on {{ selected_date }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in facility_availability %}
+            <tr>
+                <td>{{ item.facility.name }}</td>
+                <td>{{ item.facility.description }}</td>
+                <td>
+                    {% if item.booked %}
+                        <span class="text-danger">Booked</span>
+                        <ul>
+                            {% for booking in item.bookings %}
+                                <li>{{ booking.user }} - {{ booking.time_slot }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span class="text-success">Available</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

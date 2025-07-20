@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>My Profile</h2>
+
+<form method="post">
+  {% csrf_token %}
+  <p><strong>Username:</strong> {{ user.username }}</p>
+  
+  <label>Email:</label>
+  <input type="email" name="email" value="{{ user.email }}" required><br><br>
+
+  {{ form.as_p }}
+
+  <button type="submit">Save Changes</button>
+</form>
+
+<a href="{% url 'booking:password_change' %}">Change Password</a>
+{% endblock %}

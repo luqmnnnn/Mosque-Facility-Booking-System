@@ -1,0 +1,75 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}Payment - Mosque Booking{% endblock %}
+
+{% block content %}
+<h2 style="color: #5d4037;">💵 Complete Your Payment</h2>
+
+<div style="background-color: #fff5e1; padding: 30px; border-radius: 10px; max-width: 700px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+
+    {% if uploaded %}
+        <div style="background-color: #dcedc8; padding: 15px; border-left: 5px solid #689f38; border-radius: 6px; margin-bottom: 20px;">
+            ✅ <strong>Payment receipt uploaded successfully.</strong>
+        </div>
+    {% endif %}
+
+    <!-- Booking Info (shown only if receipt not yet uploaded) -->
+    {% if not uploaded %}
+        <p><strong>Facility:</strong> {{ booking.facility.name }}</p>
+        <p><strong>Date:</strong> {{ booking.event_date }}</p>
+        <p><strong>Time:</strong> {{ booking.get_time_slot_display }}</p>
+        <p><strong>Amount:</strong> <span style="color: #d84315; font-weight: bold;">RM {{ amount|floatformat:2 }}</span></p>
+    {% endif %}
+
+    <div style="background-color: #ffe5b4; padding: 15px; margin: 25px 0; border-left: 5px solid #ff9800; border-radius: 6px;">
+        <strong>📢 Reminder:</strong> Payment must be made to confirm your booking. You can upload the receipt now or later from the 
+        <a href="{% url 'booking:my_bookings' %}" style="color: #d84315; font-weight: bold;">My Bookings</a> page.<br><br>
+        <span style="color: #6d4c41;">📄 Once payment is uploaded, you can view your booking slip and status in the 
+        <a href="{% url 'booking:my_bookings' %}" style="color: #d84315; font-weight: bold;">My Bookings</a> page.</span>
+    </div>
+    
+
+    {% if not uploaded %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Payment Methods -->
+        <h3 style="color: #6d4c41;">🧾 Payment Method</h3>
+        <p style="margin-bottom: 10px;">Please select one of the following methods:</p>
+
+        <label style="display: block; margin-bottom: 10px;">
+            <input type="radio" name="method" value="Cash" required>
+            Cash to Admin (<strong>011-14351785</strong>)
+        </label>
+
+        <label style="display: block; margin-bottom: 10px;">
+            <input type="radio" name="method" value="Online Transfer">
+            Online Bank Transfer (<strong>Maybank 162021925149</strong> – Haji Mohamad Asri Bin Harun)
+        </label>
+
+        <label style="display: block; margin-bottom: 20px;">
+            <input type="radio" name="method" value="eWallet">
+            eWallet (QR Pay)
+        </label>
+
+        <!-- QR Image -->
+        <div style="margin-bottom: 20px;">
+            <img src="{% static 'images/qrpay.png' %}" alt="QR Pay" width="200" style="border: 1px solid #ccc; border-radius: 5px;">
+        </div>
+
+        <!-- File Upload -->
+        <label for="receipt_file" style="font-weight: bold;">Upload Payment Receipt (PDF or Image):</label><br>
+        <input type="file" name="receipt_file" accept=".jpg,.jpeg,.png,.pdf" style="margin-top: 10px;"><br><br>
+        <small style="color: #5d4037;">You may skip for now and upload later from <strong>My Bookings</strong>.</small><br><br>
+
+        <!-- Submit -->
+        <button type="submit"
+                style="background-color: #ffcc80; color: #5d4037; padding: 10px 20px;
+                       border: none; border-radius: 6px; font-size: 16px; cursor: pointer;">
+            ✅ Confirm Payment
+        </button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

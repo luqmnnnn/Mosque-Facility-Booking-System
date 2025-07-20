@@ -1,0 +1,67 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}Book a Facility{% endblock %}
+
+{% block content %}
+
+<h2 style="color: #5d4037; margin-bottom: 20px;">📌 Book a Facility</h2>
+
+<div style="background-color: #fff5e1; padding: 30px; border-radius: 10px; max-width: 600px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <!-- Display rate info dynamically -->
+        <div id="rate-display" style="margin-top: 15px; color: #5d4037; font-weight: bold;"></div>
+
+        <button type="submit"
+                style="margin-top: 20px; background-color: #ffcc80; color: #5d4037; padding: 10px 20px;
+                       border: none; border-radius: 6px; font-size: 16px; cursor: pointer;">
+            Submit Booking
+        </button>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const timeSlotField = document.querySelector('[name="time_slot"]');
+    const facilityField = document.querySelector('[name="facility"]');
+    const displayDiv = document.getElementById('rate-display');
+
+    const facilityRates = {
+        {% for facility in facilities %}
+            "{{ facility.id }}": {
+                name: "{{ facility.name }}",
+                session_rate: "{{ facility.rate }}",
+                full_day_rate: "{{ facility.full_day_rate }}"
+            },
+        {% endfor %}
+    };
+
+    function updateRateDisplay() {
+        const facilityId = facilityField.value;
+        const timeSlot = timeSlotField.value;
+        const rateData = facilityRates[facilityId];
+
+        if (rateData) {
+            let html = `<strong>Facility:</strong> ${rateData.name}<br>`;
+            if (timeSlot === "08:00-22:00") {
+                html += `<strong>Total:</strong> RM${rateData.full_day_rate} (Full Day: 08:00 - 22:00)`;
+            } else {
+                html += `<strong>Total:</strong> RM${rateData.session_rate} (Per 2-Hour Session)`;
+            }
+            displayDiv.innerHTML = html;
+        } else {
+            displayDiv.innerHTML = '';
+        }
+    }
+
+    // Run on page load and when fields change
+    facilityField.addEventListener('change', updateRateDisplay);
+    timeSlotField.addEventListener('change', updateRateDisplay);
+    updateRateDisplay();
+});
+</script>
+
+{% endblock %}

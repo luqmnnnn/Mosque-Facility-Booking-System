@@ -1,0 +1,61 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}Home - Mosque Prima Saujana Impian{% endblock %}
+
+{% block content %}
+
+<div>
+    <img src="{% static 'images/mosqueimage.png' %}" alt="Mosque Banner"
+         style="width: 100%; height: 450px; object-fit: cover; object-position: center; border-radius: 10px; margin-bottom: 30px;">
+</div>
+
+<!-- Welcome Section -->
+<div style="background-color: #fff0e1; border-radius: 10px; padding: 30px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+    <h1 style="color: #5d4037;">Welcome to the Mosque Facility Booking System</h1>
+    <p style="font-size: 17px; color: #6d4c41; margin-top: 10px;">
+        This system allows you to browse available facilities, submit bookings, upload payment receipts, and manage your reservations — all in one place.
+    </p>
+
+    <!-- Feature Cards -->
+    <div style="margin-top: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+        <!-- Facilities -->
+        <div style="background: #ffe0b2; padding: 20px; border-radius: 10px;">
+            <h3>🕌 View Facilities</h3>
+            <p style="margin: 10px 0;">Explore halls, rooms, and available spaces with updated rates.</p>
+            <a href="{% url 'booking:facilities' %}" style="color: #5d4037; font-weight: bold;">Check Facilities →</a>
+        </div>
+
+        <!-- Booking -->
+        <div style="background: #ffcc80; padding: 20px; border-radius: 10px;">
+            <h3>📌 Book a Facility</h3>
+            <p style="margin: 10px 0;">Submit a booking request for your event or activity with just a few clicks.</p>
+            <a href="{% url 'booking:make_booking' %}" style="color: #5d4037; font-weight: bold;">Book Now →</a>
+        </div>
+
+        <!-- My Bookings -->
+        <div style="background: #ffe0b2; padding: 20px; border-radius: 10px;">
+            <h3>🗓 My Bookings</h3>
+            <p style="margin: 10px 0;">Track all your bookings, payment status, and booking slips.</p>
+            <a href="{% url 'booking:my_bookings' %}" style="color: #5d4037; font-weight: bold;">View Bookings →</a>
+        </div>
+
+        <!-- Profile -->
+        <div style="background: #ffcc80; padding: 20px; border-radius: 10px;">
+            <h3>🙍 My Profile</h3>
+            <p style="margin: 10px 0;">Update your personal information or change your password anytime.</p>
+            <a href="{% url 'booking:profile' %}" style="color: #5d4037; font-weight: bold;">Go to Profile →</a>
+        </div>
+    </div>
+
+    <!-- Admin Section -->
+    {% if user.is_staff %}
+    <div style="margin-top: 40px; background: #ffd699; padding: 25px; border-radius: 10px;">
+        <h3>🛠 Admin Dashboard</h3>
+        <p style="margin: 10px 0;">As an admin, you can approve or reject bookings, manage reports, and handle facility data.</p>
+        <a href="{% url 'booking:admin_dashboard' %}" style="color: #5d4037; font-weight: bold;">Access Dashboard →</a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

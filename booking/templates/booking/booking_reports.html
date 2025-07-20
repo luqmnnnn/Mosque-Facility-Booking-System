@@ -1,0 +1,80 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}Booking Reports{% endblock %}
+
+{% block content %}
+<h2 style="color: #5d4037;">📊 Booking Reports</h2>
+<p><a href="{% url 'booking:admin_dashboard' %}" style="color: #5d4037;">← Back to Admin Dashboard</a></p>
+
+<form method="get" style="margin-bottom: 20px;">
+    <label><strong>Filter by:</strong></label>
+    <select name="period" id="period" onchange="this.form.submit()">
+        <option value="daily" {% if selected_period == 'daily' %}selected{% endif %}>Daily</option>
+        <option value="weekly" {% if selected_period == 'weekly' %}selected{% endif %}>Weekly</option>
+        <option value="monthly" {% if selected_period == 'monthly' %}selected{% endif %}>Monthly</option>
+    </select>
+
+    {% if selected_period == 'daily' %}
+        <input type="date" name="date" value="{{ selected_date|date:'Y-m-d' }}" onchange="this.form.submit()">
+    {% elif selected_period == 'weekly' %}
+        <input type="week" name="week" value="{{ selected_week }}" onchange="this.form.submit()">
+    {% elif selected_period == 'monthly' %}
+        <input type="month" name="month" value="{{ selected_month }}" onchange="this.form.submit()">
+    {% endif %}
+</form>
+
+
+<table style="width: 100%; border-collapse: collapse; background-color: #fff5e1;">
+    <thead>
+        <tr style="background-color: #ffe0b2;">
+            <th style="padding: 10px; border: 1px solid #e0c097;">Booking ID</th>
+            <th style="padding: 10px; border: 1px solid #e0c097;">User</th>
+            <th style="padding: 10px; border: 1px solid #e0c097;">Facility</th>
+            <th style="padding: 10px; border: 1px solid #e0c097;">Date</th>
+            <th style="padding: 10px; border: 1px solid #e0c097;">Time</th>
+            <th style="padding: 10px; border: 1px solid #e0c097;">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in bookings %}
+        <tr>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">{{ booking.id }}</td>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">{{ booking.user.username }}</td>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">{{ booking.facility.name }}</td>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">{{ booking.event_date }}</td>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">{{ booking.get_time_slot_display }}</td>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">{{ booking.status }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align: center;">No bookings found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+<h3>📊 Status Breakdown</h3>
+<ul>
+    <li><strong>Approved:</strong> {{ approved_count }}</li>
+    <li><strong>Rejected:</strong> {{ rejected_count }}</li>
+    <li><strong>Pending:</strong> {{ pending_count }}</li>
+</ul>
+<h3 style="color: #5d4037; margin-top: 40px;">📈 Facility Usage Summary ({{ selected_period|title }})</h3>
+<table style="width: 100%; border-collapse: collapse; background-color: #f5f5f5; margin-bottom: 40px;">
+    <thead>
+        <tr style="background-color: #ffe0b2;">
+            <th style="padding: 10px; border: 1px solid #e0c097;">Facility</th>
+            <th style="padding: 10px; border: 1px solid #e0c097;">Booking Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for facility in facility_usage %}
+        <tr>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">{{ facility.facility__name }}</td>
+            <td style="padding: 10px; border: 1px solid #f0e0c0;">{{ facility.total }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="2" style="text-align: center;">No data available.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

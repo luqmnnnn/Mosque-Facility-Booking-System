@@ -1,0 +1,140 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+<h2 style="color: #5d4037;">My Bookings</h2>
+
+{% if messages %}
+    {% for message in messages %}
+        <p style="color: green;">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+{% if bookings %}
+    {% for booking in bookings %}
+        <div style="background-color: #fff5e1; padding: 20px; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+
+            <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+            <p><strong>Facility:</strong> {{ booking.facility.name }}</p>
+            <p><strong>Date:</strong> {{ booking.event_date }}</p>
+            <p><strong>Time:</strong> {{ booking.get_time_slot_display }}</p>
+            <p><strong>Status:</strong> 
+                {% if booking.status == "Approved" %}
+                    <span style="color: green; font-weight: bold;">Approved</span>
+                {% elif booking.status == "Rejected" %}
+                    <span style="color: red; font-weight: bold;">Rejected</span>
+                {% else %}
+                    <span style="color: orange; font-weight: bold;">Pending</span>
+                {% endif %}
+            </p>
+
+            {% if booking.payment %}
+                <p><strong>Receipt No:</strong> {{ booking.payment.receipt_number }}</p>
+                <p><strong>User:</strong> {{ booking.user.username }}</p>
+                <p><strong>Amount Paid:</strong> RM {{ booking.payment.amount|floatformat:2 }}</p>
+                <p><strong>Payment Method:</strong> {{ booking.payment.method }}</p>
+                <p><strong>Payment Date:</strong> {{ booking.payment.payment_date }}</p>
+
+                {% if booking.payment.receipt_file %}
+                    <p><strong>Uploaded Receipt:</strong>
+                        <a href="{{ booking.payment.receipt_file.url }}" target="_blank">View File</a>
+                    </p>
+                {% else %}
+                    <!-- Upload receipt only if not uploaded yet -->
+                    <form method="post" enctype="multipart/form-data" style="margin-top: 15px;">
+                        {% csrf_token %}
+                        <input type="hidden" name="booking_id" value="{{ booking.id }}">
+
+                        <label><strong>Upload Payment Receipt:</strong></label><br>
+                        <input type="file" name="receipt_file" required><br><br>
+
+                        <label><strong>Payment Method:</strong></label><br>
+                        <select name="method" required>
+                            <option value="">-- Select Method --</option>
+                            <option value="Cash">Cash to Admin</option>
+                            <option value="Online Transfer">Online Transfer</option>
+                            <option value="eWallet">eWallet (QR Pay)</option>
+                        </select><br><br>
+
+                        <button type="submit"
+                                style="background-color: #ffcc80; color: #5d4037; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                            Upload Receipt
+                        </button>
+                    </form>
+                {% endif %}
+
+                <!-- Print Button -->
+                <button onclick="printSlip({{ booking.id }})"
+                        style="margin-top: 15px; background-color: #ffcc80; color: #5d4037; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                    Print Booking Slip
+                </button>
+
+                <!-- Hidden Printable Slip -->
+                <div id="printable-slip-{{ booking.id }}" style="display:none;">
+                    <div style="padding: 30px; font-family: Arial;">
+                        <h2>Booking Slip</h2>
+                        <hr>
+                        <p><strong>Receipt No:</strong> {{ booking.payment.receipt_number }}</p>
+                        <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+                        <p><strong>User:</strong> {{ booking.user.username }}</p>
+                        <p><strong>Facility:</strong> {{ booking.facility.name }}</p>
+                        <p><strong>Date:</strong> {{ booking.event_date }}</p>
+                        <p><strong>Time:</strong> {{ booking.get_time_slot_display }}</p>
+                        <p><strong>Status:</strong> {{ booking.status }}</p>
+                        <p><strong>Amount Paid:</strong> RM {{ booking.payment.amount|floatformat:2 }}</p>
+                        <p><strong>Payment Method:</strong> {{ booking.payment.method }}</p>
+                        <p><strong>Payment Date:</strong> {{ booking.payment.payment_date }}</p>
+                    </div>
+                </div>
+
+            {% else %}
+                <!-- No payment yet -->
+                {% if booking.time_slot == "08:00-22:00" %}
+                    <p><strong>Amount to Pay (Full Day):</strong> RM {{ booking.facility.full_day_rate|floatformat:2 }}</p>
+                {% else %}
+                    <p><strong>Amount to Pay (Per Session):</strong> RM {{ booking.facility.rate|floatformat:2 }}</p>
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data" style="margin-top: 15px;">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+
+                    <label><strong>Upload Payment Receipt:</strong></label><br>
+                    <input type="file" name="receipt_file" required><br><br>
+
+                    <label><strong>Payment Method:</strong></label><br>
+                    <select name="method" required>
+                        <option value="">-- Select Method --</option>
+                        <option value="Cash">Cash to Admin</option>
+                        <option value="Online Transfer">Online Transfer</option>
+                        <option value="eWallet">eWallet (QR Pay)</option>
+                    </select><br><br>
+
+                    <button type="submit"
+                            style="background-color: #ffcc80; color: #5d4037; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer;">
+                        Upload Receipt
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% else %}
+    <p>You have no bookings yet.</p>
+{% endif %}
+
+<!-- Print Script -->
+<script>
+    function printSlip(bookingId) {
+        const slipContent = document.getElementById(`printable-slip-${bookingId}`).innerHTML;
+        const win = window.open('', '_blank');
+        win.document.write('<html><head><title>Print Booking Slip</title></head><body>');
+        win.document.write(slipContent);
+        win.document.write('</body></html>');
+        win.document.close();
+        win.print();
+    }
+</script>
+
+{% endblock %}

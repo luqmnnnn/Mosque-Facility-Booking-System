@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Mosque Prima Saujana Impian Facility Booking System{% endblock %}</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            min-height: 100vh;
+            background-color: #fff8f0; /* soft peach background for body */
+        }
+
+        .sidebar {
+            width: 230px;
+            background-color: #ffe5b4; /* warm yellow-peach */
+            color: #5d4037; /* rich brown for contrast */
+            padding: 20px;
+            flex-shrink: 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+
+        .sidebar a, .sidebar form {
+            display: block;
+            margin: 10px 0;
+        }
+
+        .sidebar a {
+            color: #5d4037;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #ffcc99; /* slightly darker peach on hover */
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #5d4037;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 10px;
+            text-align: left;
+            width: 100%;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #e57373;
+            color: white;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 40px;
+            background-color: #fffaf5; /* lighter peachy white */
+        }
+
+        .messages ul {
+            color: red;
+            list-style: none;
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Mosque Prima Saujana Impian Facility Booking System</h2>
+
+        {% if user.is_authenticated %}
+            <p>Welcome, {{ user.username }}</p>
+            <a href="{% url 'booking:home' %}">🏠 Home</a>
+            <a href="{% url 'booking:facilities' %}">📋 Facilities</a>
+            <a href="{% url 'booking:make_booking' %}">📌 Book Facility</a>
+            <a href="{% url 'booking:my_bookings' %}">🗓 My Bookings</a>
+            <a href="{% url 'booking:profile' %}">🙍 My Profile</a>
+
+            {% if user.is_staff %}
+                <a href="{% url 'booking:admin_dashboard' %}">🛠 Admin Dashboard</a>
+            {% endif %}
+
+            <form method="post" action="{% url 'booking:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">🚪 Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'booking:home' %}">🏠 Home</a>
+            <a href="{% url 'booking:facilities' %}">📋 Facilities</a>
+            <a href="{% url 'booking:login' %}">🔐 Login</a>
+            <a href="{% url 'booking:register' %}">✍️ Register</a>
+        {% endif %}
+    </div>
+
+    <div class="content">
+        {% if messages %}
+            <div class="messages">
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% block content %}
+        <p>This is the homepage of your Mosque Facility Booking System.</p>
+        {% endblock %}
+    </div>
+
+</body>
+</html>

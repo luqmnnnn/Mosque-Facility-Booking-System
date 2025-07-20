@@ -1,0 +1,18 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}Edit Booking{% endblock %}
+
+{% block content %}
+<h2 style="color: #5d4037;">✏️ Edit Booking</h2>
+
+<form method="post" style="background-color: #fff5e1; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); width: 100%; max-width: 600px;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" style="background-color: #64b5f6; color: #fff; padding: 10px 16px; border: none; border-radius: 4px; cursor: pointer;">✅ Update Booking</button>
+</form>
+
+<p style="margin-top: 20px;">
+    <a href="{% url 'booking:admin_dashboard' %}" style="color: #5d4037; text-decoration: none;">← Back to Dashboard</a>
+</p>
+{% endblock %}
